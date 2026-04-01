@@ -1,5 +1,5 @@
 export type SearchStackParamList = {
-  SearchList: undefined;
+  RepositorySearch: undefined;
   RepositoryDetail: { owner: string; repo: string };
 };
 
