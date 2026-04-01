@@ -1,11 +1,12 @@
 import { Pressable, Text, View } from "react-native";
 
-import { RepositoryListItem } from "../../types/repository";
+import type { RepositoryCardItem } from "../../types/repository";
+import { formatStarCount } from "../../utils/formatStarCount";
 import { repositoryCardStyles } from "./RepositoryCard.styles";
 
 type RepositoryCardProps = {
-  repository: RepositoryListItem;
-  onPress: (repository: RepositoryListItem) => void;
+  repository: RepositoryCardItem;
+  onPress: (repository: RepositoryCardItem) => void;
 };
 
 export function RepositoryCard({ repository, onPress }: RepositoryCardProps) {
@@ -15,10 +16,16 @@ export function RepositoryCard({ repository, onPress }: RepositoryCardProps) {
       onPress={() => onPress(repository)}
     >
       <Text style={repositoryCardStyles.cardName}>{repository.name}</Text>
-      <Text style={repositoryCardStyles.cardOwner}>{repository.owner}</Text>
+      <Text style={repositoryCardStyles.cardOwner}>
+        {repository.owner.login}
+      </Text>
       <View style={repositoryCardStyles.cardMetaRow}>
-        <Text style={repositoryCardStyles.cardMeta}>{repository.language}</Text>
-        <Text style={repositoryCardStyles.cardMeta}>★ {repository.stars}</Text>
+        <Text style={repositoryCardStyles.cardMeta}>
+          {repository.language ?? "—"}
+        </Text>
+        <Text style={repositoryCardStyles.cardMeta}>
+          ★ {formatStarCount(repository.stargazers_count)}
+        </Text>
       </View>
     </Pressable>
   );
