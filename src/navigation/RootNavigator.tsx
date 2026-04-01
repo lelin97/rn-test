@@ -4,6 +4,7 @@ import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { SavedScreen } from "../screens/SavedScreen";
 import { SearchNavigator } from "./SearchNavigator";
 import { RootTabParamList } from "./types";
+import { Ionicons } from "@expo/vector-icons";
 
 const Tab = createBottomTabNavigator<RootTabParamList>();
 
@@ -29,6 +30,9 @@ export function RootNavigator() {
             backgroundColor: "#090d1a",
             borderTopColor: "#1e293b",
           },
+          tabBarItemStyle: {
+            paddingVertical: 12,
+          },
           tabBarActiveTintColor: "#818cf8",
           tabBarInactiveTintColor: "#64748b",
           tabBarLabelStyle: {
@@ -40,13 +44,23 @@ export function RootNavigator() {
         <Tab.Screen
           name="SearchTab"
           component={SearchNavigator}
-          options={{ title: "Search" }}
+          options={{
+            title: "Search",
+            tabBarIcon: ({ color, size }) => (
+              <Ionicons name="search-outline" color={color} size={size} />
+            ),
+          }}
         />
 
         <Tab.Screen
           name="SavedTab"
           component={SavedScreen}
-          options={{ title: "Saved" }}
+          options={{
+            title: "Saved",
+            tabBarIcon: ({ color, size }) => (
+              <Ionicons name="star-outline" color={color} size={size} />
+            ),
+          }}
         />
       </Tab.Navigator>
     </NavigationContainer>
