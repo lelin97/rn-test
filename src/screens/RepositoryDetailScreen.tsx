@@ -13,11 +13,7 @@ export function RepositoryDetailScreen({ route, navigation }: Props) {
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.content}>
-        <Pressable
-          onPress={navigation.goBack}
-          style={styles.backButton}
-          hitSlop={15}
-        >
+        <Pressable onPress={navigation.goBack} style={styles.backButton} hitSlop={15}>
           <Ionicons name="chevron-back" size={20} color="#818cf8" />
           <Text style={styles.backText}>Results</Text>
         </Pressable>
@@ -27,8 +23,8 @@ export function RepositoryDetailScreen({ route, navigation }: Props) {
           {owner}/{repo}
         </Text>
         <Text style={styles.body}>
-          This screen will be used to display the complete details of the
-          repository and the favorite toggle.
+          This screen will be used to display the complete details of the repository and the
+          favorite toggle.
         </Text>
       </View>
     </SafeAreaView>

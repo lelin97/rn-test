@@ -1,108 +1,113 @@
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { FlatList, StyleSheet, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 
+import { searchRepositories } from "../api/searchRepositories";
 import { EmptyState } from "../components/EmptyState/EmptyState.index";
 import { LoadingState } from "../components/LoadingState/LoadingState.index";
 import { RepositoryCard } from "../components/RepositoryCard/RepositoryCard.index";
 import { SearchInput } from "../components/SearchInput/SearchInput.index";
+import { useDebounce } from "../hooks/useDebounce";
 import { SearchStackParamList } from "../navigation/types";
-import { RepositoryListItem } from "../types/repository";
+import type { RepositoryCardItem, RepositoryResponseObject } from "../types/repository";
 
 type Props = NativeStackScreenProps<SearchStackParamList, "SearchList">;
 
-const MOCK_REPOSITORIES: RepositoryListItem[] = [
-  {
-    id: 1,
-    name: "react-native",
-    owner: "facebook",
-    language: "TypeScript",
-    stars: "121k",
-  },
-  { id: 2, name: "expo", owner: "expo", language: "TypeScript", stars: "29k" },
-  {
-    id: 3,
-    name: "react-navigation",
-    owner: "react-navigation",
-    language: "TypeScript",
-    stars: "26k",
-  },
-];
-
 export function SearchScreen({ navigation }: Props) {
   const [searchRepository, setSearchRepository] = useState("");
+  const [repositories, setRepositories] = useState<RepositoryResponseObject[]>([]);
   const [isLoading, setIsLoading] = useState(false);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
-  const filteredRepositories = useMemo(() => {
-    const value = searchRepository.trim().toLowerCase();
+  const debouncedQuery = useDebounce(searchRepository.trim(), { delayMs: 500 });
 
-    if (!value) {
-      return MOCK_REPOSITORIES;
+  const clearSearch = useCallback(() => {
+    setRepositories([]);
+    setErrorMessage(null);
+    setIsLoading(false);
+  }, []);
+
+  const runSearchRepository = useCallback(async (query: string) => {
+    setIsLoading(true);
+    setErrorMessage(null);
+
+    try {
+      const result = await searchRepositories(query);
+
+      if (result.success) {
+        setRepositories(result.data);
+      } else {
+        setErrorMessage(result.message);
+        setRepositories([]);
+      }
+    } catch {
+      setErrorMessage("Something went wrong. Please try again.");
+      setRepositories([]);
+    } finally {
+      setIsLoading(false);
     }
-
-    return MOCK_REPOSITORIES.filter(
-      (repository) =>
-        repository.name.toLowerCase().includes(value) ||
-        repository.owner.toLowerCase().includes(value),
-    );
-  }, [searchRepository]);
+  }, []);
 
   useEffect(() => {
-    const value = searchRepository.trim();
-
-    if (!value) {
-      setIsLoading(false);
-
+    if (!debouncedQuery) {
+      clearSearch();
       return;
     }
 
-    setIsLoading(true);
+    runSearchRepository(debouncedQuery);
+  }, [debouncedQuery, runSearchRepository, clearSearch]);
 
-    const timeout = setTimeout(() => setIsLoading(false), 350);
+  const openRepository = useCallback(
+    (repository: RepositoryCardItem) => {
+      navigation.navigate("RepositoryDetail", {
+        owner: repository.owner.login ?? "",
+        repo: repository.name,
+      });
+    },
+    [navigation],
+  );
 
-    return () => clearTimeout(timeout);
-  }, [searchRepository]);
-
-  const openRepository = (repository: RepositoryListItem) => {
-    navigation.navigate("RepositoryDetail", {
-      owner: repository.owner,
-      repo: repository.name,
-    });
-  };
-
-  const renderRepository = ({ item }: { item: RepositoryListItem }) => (
+  const renderRepository = ({ item }: { item: RepositoryResponseObject }) => (
     <RepositoryCard repository={item} onPress={openRepository} />
   );
+
+  const renderContent = () => {
+    if (!searchRepository.trim()) {
+      return <EmptyState title="Explore repositories" description="Type a name, topic, or owner to search GitHub." />;
+    }
+
+    if (isLoading) {
+      return <LoadingState message="Searching repositories..." />;
+    }
+
+    if (errorMessage) {
+      return <EmptyState title="Something went wrong" description={errorMessage} />;
+    }
+
+    if (repositories.length === 0) {
+      return <EmptyState title="No repositories found" description="Try another keyword or owner name." />;
+    }
+
+    return (
+      <FlatList
+        data={repositories}
+        keyExtractor={(item) => item.id.toString()}
+        renderItem={renderRepository}
+        contentContainerStyle={styles.listContent}
+        showsVerticalScrollIndicator={false}
+      />
+    );
+  };
 
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.content}>
         <Text style={styles.title}>Explore</Text>
 
-        <SearchInput
-          value={searchRepository}
-          onChangeText={setSearchRepository}
-        />
+        <SearchInput value={searchRepository} onChangeText={setSearchRepository} />
 
-        <View style={styles.resultsArea}>
-          {isLoading ? (
-            <LoadingState message="Searching repositories..." />
-          ) : filteredRepositories.length === 0 ? (
-            <EmptyState
-              title="No repositories found"
-              description="Try another keyword or owner name."
-            />
-          ) : (
-            <FlatList
-              data={filteredRepositories}
-              keyExtractor={(item) => item.id.toString()}
-              renderItem={renderRepository}
-              contentContainerStyle={styles.listContent}
-              showsVerticalScrollIndicator={false}
-            />
-          )}
-        </View>
+        <View style={styles.resultsArea}>{renderContent()}</View>
       </View>
     </SafeAreaView>
   );
