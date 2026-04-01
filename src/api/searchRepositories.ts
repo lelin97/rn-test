@@ -16,6 +16,7 @@ export async function searchRepositories(query: string): Promise<SearchRepositor
     if (error instanceof GitHubApiError) {
       return { success: false, message: error.message };
     }
+    
     return { success: false, message: "Network error. Check your connection and try again." };
   }
 }
