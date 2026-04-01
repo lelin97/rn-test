@@ -1,20 +1,21 @@
 import { useCallback, useEffect, useState } from "react";
-import { FlatList, StyleSheet, Text, View } from "react-native";
+import { FlatList, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 
-import { searchRepositories } from "../api/searchRepositories";
-import { EmptyState } from "../components/EmptyState/EmptyState.index";
-import { LoadingState } from "../components/LoadingState/LoadingState.index";
-import { RepositoryCard } from "../components/RepositoryCard/RepositoryCard.index";
-import { SearchInput } from "../components/SearchInput/SearchInput.index";
-import { useDebounce } from "../hooks/useDebounce";
-import { SearchStackParamList } from "../navigation/types";
-import type { RepositoryCardItem, RepositoryResponseObject } from "../types/repository";
+import { searchRepositories } from "../../api/searchRepositories";
+import { EmptyState } from "../../components/EmptyState/EmptyState.index";
+import { LoadingState } from "../../components/LoadingState/LoadingState.index";
+import { RepositoryCard } from "../../components/RepositoryCard/RepositoryCard.index";
+import { SearchInput } from "../../components/SearchInput/SearchInput.index";
+import { useDebounce } from "../../hooks/useDebounce";
+import { SearchStackParamList } from "../../navigation/types";
+import type { RepositoryCardItem, RepositoryResponseObject } from "../../types/repository";
+import { repositorySearchScreenStyles as styles } from "./RepositorySearchScreen.styles";
 
-type Props = NativeStackScreenProps<SearchStackParamList, "SearchList">;
+type RepositorySearchScreenProps = NativeStackScreenProps<SearchStackParamList, "RepositorySearch">;
 
-export function SearchScreen({ navigation }: Props) {
+export function RepositorySearchScreen({ navigation }: RepositorySearchScreenProps) {
   const [searchRepository, setSearchRepository] = useState("");
   const [repositories, setRepositories] = useState<RepositoryResponseObject[]>([]);
   const [isLoading, setIsLoading] = useState(false);
@@ -112,28 +113,3 @@ export function SearchScreen({ navigation }: Props) {
     </SafeAreaView>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "#090d1a",
-  },
-  content: {
-    flex: 1,
-    paddingHorizontal: 20,
-    paddingTop: 8,
-  },
-  title: {
-    color: "#f8fafc",
-    fontSize: 32,
-    fontWeight: "700",
-    marginBottom: 16,
-  },
-  resultsArea: {
-    flex: 1,
-    marginTop: 14,
-  },
-  listContent: {
-    paddingBottom: 24,
-  },
-});

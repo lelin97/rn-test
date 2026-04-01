@@ -1,7 +1,7 @@
 import { NavigationContainer, DefaultTheme } from "@react-navigation/native";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 
-import { SavedScreen } from "../screens/SavedScreen";
+import { RepositorySavedScreen } from "../screens/RepositorySavedScreen/RepositorySavedScreen.index";
 import { SearchNavigator } from "./SearchNavigator";
 import { RootTabParamList } from "./types";
 import { Ionicons } from "@expo/vector-icons";
@@ -54,7 +54,7 @@ export function RootNavigator() {
 
         <Tab.Screen
           name="SavedTab"
-          component={SavedScreen}
+          component={RepositorySavedScreen}
           options={{
             title: "Saved",
             tabBarIcon: ({ color, size }) => (

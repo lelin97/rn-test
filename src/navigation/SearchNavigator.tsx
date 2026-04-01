@@ -1,7 +1,7 @@
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 
-import { RepositoryDetailScreen } from "../screens/RepositoryDetailScreen";
-import { SearchScreen } from "../screens/SearchScreen";
+import { RepositoryDetailScreen } from "../screens/RepositoryDetailScreen/RepositoryDetailScreen.index";
+import { RepositorySearchScreen } from "../screens/RepositorySearchScreen/RepositorySearchScreen.index";
 import { SearchStackParamList } from "./types";
 
 const Stack = createNativeStackNavigator<SearchStackParamList>();
@@ -15,8 +15,8 @@ export function SearchNavigator() {
       }}
     >
       <Stack.Screen
-        name="SearchList"
-        component={SearchScreen}
+        name="RepositorySearch"
+        component={RepositorySearchScreen}
         options={{ title: "Explore", headerShown: false }}
       />
 
