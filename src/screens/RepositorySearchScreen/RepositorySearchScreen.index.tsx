@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useState } from "react";
 import { FlatList, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { CompositeScreenProps } from "@react-navigation/native";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 
 import { searchRepositories } from "../../api/searchRepositories";
@@ -9,11 +10,14 @@ import { LoadingState } from "../../components/LoadingState/LoadingState.index";
 import { RepositorySearchResultCard } from "./components/RepositorySearchResultCard/RepositorySearchResultCard.index";
 import { SearchInput } from "../../components/SearchInput/SearchInput.index";
 import { useDebounce } from "../../hooks/useDebounce";
-import { SearchStackParamList } from "../../navigation/types";
+import { RootStackParamList, SearchStackParamList } from "../../navigation/types";
 import type { RepositoryCardItem, RepositoryResponseObject } from "../../types/repository";
 import { repositorySearchScreenStyles as styles } from "./RepositorySearchScreen.styles";
 
-type RepositorySearchScreenProps = NativeStackScreenProps<SearchStackParamList, "RepositorySearch">;
+type RepositorySearchScreenProps = CompositeScreenProps<
+  NativeStackScreenProps<SearchStackParamList, "RepositorySearch">,
+  NativeStackScreenProps<RootStackParamList>
+>;
 
 export function RepositorySearchScreen({ navigation }: RepositorySearchScreenProps) {
   const [searchRepository, setSearchRepository] = useState("");

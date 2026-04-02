@@ -8,14 +8,14 @@ import { getSingleRepository } from "../../api/getSingleRepository";
 import { EmptyState } from "../../components/EmptyState/EmptyState.index";
 import { LoadingState } from "../../components/LoadingState/LoadingState.index";
 import { useFavoritesStore, useIsFavorite } from "../../store/favoritesStore";
-import { SearchStackParamList } from "../../navigation/types";
+import { RootStackParamList } from "../../navigation/types";
 import { RepositoryDetailInfoCard } from "./components/RepositoryDetailInfoCard/RepositoryDetailInfoCard.index";
 import { RepositoryFavoriteToggle } from "./components/RepositoryFavoriteToggle/RepositoryFavoriteToggle.index";
 import { RepositoryDetailTopicsSection } from "./components/RepositoryDetailTopicsSection/RepositoryDetailTopicsSection.index";
 import { repositoryDetailScreenStyles as styles } from "./RepositoryDetailScreen.styles";
 import type { FavoriteRepository, RepositoryDetailObject } from "../../types/repository";
 
-type RepositoryDetailScreenProps = NativeStackScreenProps<SearchStackParamList, "RepositoryDetail">;
+type RepositoryDetailScreenProps = NativeStackScreenProps<RootStackParamList, "RepositoryDetail">;
 
 export function RepositoryDetailScreen({ route, navigation }: RepositoryDetailScreenProps) {
   const { owner, repo } = route.params;
