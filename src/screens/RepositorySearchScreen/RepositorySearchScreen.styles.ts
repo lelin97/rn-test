@@ -19,6 +19,7 @@ export const repositorySearchScreenStyles = StyleSheet.create({
   resultsArea: {
     flex: 1,
     marginTop: 14,
+    paddingBottom: 80,
   },
   listContent: {
     paddingBottom: 24,

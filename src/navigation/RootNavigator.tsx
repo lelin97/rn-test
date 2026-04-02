@@ -60,8 +60,8 @@ function TabNavigator() {
         component={RepositorySavedScreen}
         options={{
           title: "Saved",
-          tabBarIcon: ({ color, size }) => (
-            <Ionicons name="star-outline" color={color} size={size} />
+          tabBarIcon: ({ color, size, focused }) => (
+            <Ionicons name={focused ? "star" : "star-outline"} color={color} size={size} />
           ),
         }}
       />
