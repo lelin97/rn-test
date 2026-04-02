@@ -14,7 +14,7 @@ export type SearchRepositoriesResponse = { items: RepositoryResponseObject[] };
 
 export type RepositoryCardItem = Pick<RepositoryResponseObject, "id" | "name" | "owner" | "language" | "stargazers_count">;
 
-export type FavoriteRepository = RepositoryCardItem;
+export type FavoriteRepository = Pick<RepositoryResponseObject, "id" | "name" | "owner" | "language" | "stargazers_count" | "description">;
 
 export type RepositoryDetailObject = RepositoryResponseObject;
 

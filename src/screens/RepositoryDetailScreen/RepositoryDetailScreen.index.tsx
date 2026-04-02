@@ -51,6 +51,7 @@ export function RepositoryDetailScreen({ route, navigation }: RepositoryDetailSc
     const favoriteRepository: FavoriteRepository = {
       id: repository.id,
       name: repository.name,
+      description: repository.description,
       owner: { login: repository.owner.login ?? "" },
       language: repository.language,
       stargazers_count: repository.stargazers_count,
