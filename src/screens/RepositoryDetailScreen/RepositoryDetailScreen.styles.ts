@@ -12,11 +12,14 @@ export const repositoryDetailScreenStyles = StyleSheet.create({
   scrollContent: {
     paddingBottom: 32,
   },
+  headerRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginBottom: 20,
+  },
   backButton: {
     flexDirection: "row",
     alignItems: "center",
-    alignSelf: "flex-start",
-    marginBottom: 20,
     gap: 6,
   },
   backText: {
