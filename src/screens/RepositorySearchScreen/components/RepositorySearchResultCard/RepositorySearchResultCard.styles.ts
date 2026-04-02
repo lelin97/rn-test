@@ -1,6 +1,6 @@
 import { StyleSheet } from "react-native";
 
-export const repositoryCardStyles = StyleSheet.create({
+export const repositorySearchResultCardStyles = StyleSheet.create({
   card: {
     backgroundColor: "#0f172a",
     borderWidth: 1,

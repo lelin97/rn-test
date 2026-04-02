@@ -6,7 +6,7 @@ import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { searchRepositories } from "../../api/searchRepositories";
 import { EmptyState } from "../../components/EmptyState/EmptyState.index";
 import { LoadingState } from "../../components/LoadingState/LoadingState.index";
-import { RepositoryCard } from "../../components/RepositoryCard/RepositoryCard.index";
+import { RepositorySearchResultCard } from "./components/RepositorySearchResultCard/RepositorySearchResultCard.index";
 import { SearchInput } from "../../components/SearchInput/SearchInput.index";
 import { useDebounce } from "../../hooks/useDebounce";
 import { SearchStackParamList } from "../../navigation/types";
@@ -70,7 +70,7 @@ export function RepositorySearchScreen({ navigation }: RepositorySearchScreenPro
   );
 
   const renderRepository = ({ item }: { item: RepositoryResponseObject }) => (
-    <RepositoryCard repository={item} onPress={openRepository} />
+    <RepositorySearchResultCard repository={item} onPress={openRepository} />
   );
 
   const renderContent = () => {
