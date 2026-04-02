@@ -10,7 +10,10 @@ export type RepositoryResponseObject = {
   topics?: string[];
 };
 
-export type SearchRepositoriesResponse = { items: RepositoryResponseObject[] };
+export type SearchRepositoriesResponse = {
+  items: RepositoryResponseObject[];
+  total_count: number;
+};
 
 export type RepositoryCardItem = Pick<RepositoryResponseObject, "id" | "name" | "owner" | "language" | "stargazers_count">;
 
@@ -23,7 +26,7 @@ export type RepositoryDetailInfoCardModel = Pick<RepositoryDetailObject, "name" 
 export type RepositoryDetailTopicsSectionModel = Pick<RepositoryDetailObject, "topics">;
 
 export type SearchRepositoriesResult =
-  | { success: true; data: RepositoryResponseObject[] }
+  | { success: true; items: RepositoryResponseObject[]; totalCount: number; page: number }
   | { success: false; message: string };
 
 export type SingleRepositoryResult =

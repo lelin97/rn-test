@@ -1,5 +1,5 @@
-import { useCallback, useEffect, useState } from "react";
-import { FlatList, Text, View } from "react-native";
+import { useCallback, useEffect, useRef, useState } from "react";
+import { ActivityIndicator, FlatList, Pressable, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { CompositeScreenProps } from "@react-navigation/native";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
@@ -23,45 +23,87 @@ export function RepositorySearchScreen({ navigation }: RepositorySearchScreenPro
   const [searchRepository, setSearchRepository] = useState("");
   const [repositories, setRepositories] = useState<RepositoryResponseObject[]>([]);
   const [isLoading, setIsLoading] = useState(false);
+
+  const [page, setPage] = useState(0);
+  const [totalCount, setTotalCount] = useState(0);
+  const [isLoadingMore, setIsLoadingMore] = useState(false);
+  const [hasMore, setHasMore] = useState(false);
+
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+
+  const repositoriesRef = useRef<RepositoryResponseObject[]>([]);
 
   const debouncedQuery = useDebounce(searchRepository.trim(), { delayMs: 500 });
 
+  const shownTotal = Math.min(totalCount, 1000);
+
   const clearSearch = useCallback(() => {
+    repositoriesRef.current = [];
+    setPage(0);
     setRepositories([]);
+    setTotalCount(0);
+    setHasMore(false);
     setErrorMessage(null);
     setIsLoading(false);
+    setIsLoadingMore(false);
   }, []);
 
-  const runSearchRepository = useCallback(async (query: string) => {
-    setIsLoading(true);
+  const runSearchRepository = useCallback(async (query: string, page: number, append: boolean) => {
+    if (append) {
+      setIsLoadingMore(true);
+    } else {
+      setIsLoading(true);
+      setPage(0);
+    }
+
     setErrorMessage(null);
 
     try {
-      const result = await searchRepositories(query);
+      const result = await searchRepositories(query, page);
 
       if (result.success) {
-        setRepositories(result.data);
+        const cappedTotal = Math.min(result.totalCount, 1000);
+        const nextList = append ? [...repositoriesRef.current, ...result.items] : result.items;
+
+        repositoriesRef.current = nextList;
+        setRepositories(nextList);
+        setTotalCount(result.totalCount);
+        setPage(page);
+
+        const fullPage = result.items.length === 20;
+        setHasMore(nextList.length < cappedTotal && fullPage);
       } else {
         setErrorMessage(result.message);
-        setRepositories([]);
+
+        if (!append) {
+          repositoriesRef.current = [];
+          setRepositories([]);
+          setTotalCount(0);
+          setHasMore(false);
+        }
       }
     } catch {
       setErrorMessage("Something went wrong. Please try again.");
-      setRepositories([]);
+
+      if (!append) {
+        repositoriesRef.current = [];
+        setRepositories([]);
+        setTotalCount(0);
+        setHasMore(false);
+      }
     } finally {
       setIsLoading(false);
+      setIsLoadingMore(false);
     }
   }, []);
 
-  useEffect(() => {
-    if (!debouncedQuery) {
-      clearSearch();
+  const loadNextPage = useCallback(() => {
+    if (!debouncedQuery || isLoadingMore || !hasMore) {
       return;
     }
 
-    runSearchRepository(debouncedQuery);
-  }, [debouncedQuery, runSearchRepository, clearSearch]);
+    runSearchRepository(debouncedQuery, page + 1, true);
+  }, [debouncedQuery, hasMore, isLoadingMore, page, runSearchRepository]);
 
   const openRepository = useCallback(
     (repository: RepositoryCardItem) => {
@@ -77,9 +119,36 @@ export function RepositorySearchScreen({ navigation }: RepositorySearchScreenPro
     <RepositorySearchResultCard repository={item} onPress={openRepository} />
   );
 
+  const renderListFooter = () => {
+    if (!hasMore) {
+      return null;
+    }
+
+    return (
+      <View style={styles.loadMoreWrap}>
+        <Pressable
+          style={({ pressed }) => [styles.loadMoreButton, pressed && styles.loadMoreButtonPressed]}
+          onPress={loadNextPage}
+          disabled={isLoadingMore}
+        >
+          {isLoadingMore ? (
+            <ActivityIndicator color="#818cf8" />
+          ) : (
+            <Text style={styles.loadMoreText}>Load more</Text>
+          )}
+        </Pressable>
+      </View>
+    );
+  };
+
   const renderContent = () => {
     if (!searchRepository.trim()) {
-      return <EmptyState title="Explore repositories" description="Type a name, topic, or owner to search GitHub." />;
+      return (
+        <EmptyState
+          title="Explore repositories"
+          description="Type a name, topic, or owner to search GitHub."
+        />
+      );
     }
 
     if (isLoading) {
@@ -91,7 +160,12 @@ export function RepositorySearchScreen({ navigation }: RepositorySearchScreenPro
     }
 
     if (repositories.length === 0) {
-      return <EmptyState title="No repositories found" description="Try another keyword or owner name." />;
+      return (
+        <EmptyState
+          title="No repositories found"
+          description="Try another keyword or owner name."
+        />
+      );
     }
 
     return (
@@ -101,9 +175,24 @@ export function RepositorySearchScreen({ navigation }: RepositorySearchScreenPro
         renderItem={renderRepository}
         contentContainerStyle={styles.listContent}
         showsVerticalScrollIndicator={false}
+        ListHeaderComponent={
+          <Text style={styles.resultSummary}>
+            {repositories.length} of {shownTotal} repositories
+          </Text>
+        }
+        ListFooterComponent={renderListFooter}
       />
     );
   };
+
+  useEffect(() => {
+    if (!debouncedQuery) {
+      clearSearch();
+      return;
+    }
+
+    runSearchRepository(debouncedQuery, 1, false);
+  }, [debouncedQuery, runSearchRepository, clearSearch]);
 
   return (
     <SafeAreaView style={styles.container}>

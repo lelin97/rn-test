@@ -23,4 +23,34 @@ export const repositorySearchScreenStyles = StyleSheet.create({
   listContent: {
     paddingBottom: 24,
   },
+  resultSummary: {
+    color: "#64748b",
+    fontSize: 13,
+    fontWeight: "600",
+    marginBottom: 12,
+  },
+  loadMoreWrap: {
+    paddingTop: 8,
+    paddingBottom: 8,
+    alignItems: "center",
+  },
+  loadMoreButton: {
+    paddingVertical: 12,
+    paddingHorizontal: 24,
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: "#4f46e5",
+    backgroundColor: "#0f172a",
+    minWidth: 160,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  loadMoreButtonPressed: {
+    opacity: 0.85,
+  },
+  loadMoreText: {
+    color: "#818cf8",
+    fontSize: 15,
+    fontWeight: "700",
+  },
 });
